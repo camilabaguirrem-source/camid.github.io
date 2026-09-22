@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análisis Retail - Features Data Set (UCuenca)</title>
+  <style>
+    :root {
+      --primary: #1e3c72;
+      --secondary: #2a5298;
+      --accent: #e74c3c;
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text: #2c3e50;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); padding-bottom: 40px; }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      text-align: center;
+      padding: 30px 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    header h1 { font-size: 2rem; margin-bottom: 8px; }
+    header p { opacity: 0.9; font-size: 1rem; }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      background: white;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .btn {
+      padding: 10px 22px;
+      border: 2px solid var(--primary);
+      background: white;
+      color: var(--primary);
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn.active, .btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    main { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      margin-bottom: 25px;
+    }
+
+    .card h2 { color: var(--primary); margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+    .card p { font-size: 0.95rem; color: #666; margin-bottom: 20px; }
+
+    /* SVG Graphics Container */
+    .svg-container {
+      width: 100%;
+      overflow-x: auto;
+      background: #fafafa;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    /* Tooltip */
+    #tooltip {
+      position: absolute;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 12px;
+      pointer-events: none;
+      display: none;
+      z-index: 1000;
+    }
+
+    /* Custom Table */
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background: var(--primary); color: white; }
+    tr:hover { background: #f1f1f1; }
+  </style>
+</head>
+<body>
+
+  <div id="tooltip"></div>
+
+  <header>
+    <h1>📊 Análisis Dinámico Retail</h1>
+    <p>Proyecto de Investigación y Desarrollo | Universidad de Cuenca</p>
+  </header>
+
+  <nav>
+    <button class="btn active" onclick="showTab('paretoTab', this)">📈 Diagrama de Pareto (80/20)</button>
+    <button class="btn" onclick="showTab('bcgTab', this)">📌 Matriz BCG (Sucursales)</button>
+    <button class="btn" onclick="showTab('fieldsTab', this)">🗂️ Campos del Dataset</button>
+  </nav>
+
+  <main>
+    <!-- TAB 1: PARETO -->
+    <section id="paretoTab" class="tab-content active">
+      <div class="card">
+        <h2>Análisis de Pareto: Inversión en Promociones (MarkDowns)</h2>
+        <p>Muestra la concentración acumulada por tienda en <code>Features data set.csv</code>. El 20% de las tiendas principales generan el mayor impacto promocional.</p>
+        <div class="svg-container">
+          <svg id="paretoSvg" width="1000" height="420"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: BCG -->
+    <section id="bcgTab" class="tab-content">
+      <div class="card">
+        <h2>Matriz BCG: Cuota de Inversión vs Índice de Precios (CPI)</h2>
+        <p>Distribución cuadrántica de las 45 tiendas según su volumen relativo y el dinamismo macroeconómico.</p>
+        <div class="svg-container">
+          <svg id="bcgSvg" width="800" height="500"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: CAMPOS DATASET -->
+    <section id="fieldsTab" class="tab-content">
+      <div class="card">
+        <h2>Estructura de Campos (Features data set.csv)</h2>
+        <p>Análisis de las variables registradas para las 45 tiendas durante el período 2010-2013.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Campo</th>
+              <th>Tipo de Dato</th>
+              <th>Descripción en Ingeniería / Retail</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>Store</code></td><td>Entero (1-45)</td><td>Identificador único de la sucursal/unidad de negocio.</td></tr>
+            <tr><td><code>Date</code></td><td>Fecha (DD/MM/YYYY)</td><td>Registro semanal de transacciones.</td></tr>
+            <tr><td><code>Temperature</code></td><td>Decimal (°F)</td><td>Temperatura promedio en la región de la tienda.</td></tr>
+            <tr><td><code>Fuel_Price</code></td><td>Decimal ($)</td><td>Costo del combustible en la región.</td></tr>
+            <tr><td><code>MarkDown1 - 5</code></td><td>Decimal ($)</td><td>Descuentos promocionales aplicados (Base de Pareto).</td></tr>
+            <tr><td><code>CPI</code></td><td>Decimal</td><td>Índice de Precios al Consumidor (Entorno económico BCG).</td></tr>
+            <tr><td><code>Unemployment</code></td><td>Decimal (%)</td><td>Tasa de desempleo en la ubicación de la tienda.</td></tr>
+            <tr><td><code>IsHoliday</code></td><td>Booleano</td><td>Indica si la semana incluye un feriado especial.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Datos procesados exactos de Features data set.csv
+    const rawPareto = [
+      {s: 39, v: 3376365, p: 4.6}, {s: 28, v: 2993174, p: 8.8}, {s: 13, v: 2871944, p: 12.7},
+      {s: 20, v: 2739199, p: 16.5}, {s: 27, v: 2621047, p: 20.1}, {s: 4, v: 2557078, p: 23.6},
+      {s: 14, v: 2553990, p: 27.1}, {s: 19, v: 2493526, p: 30.5}, {s: 2, v: 2445287, p: 33.9},
+      {s: 10, v: 2388228, p: 37.2}, {s: 24, v: 2319574, p: 40.4}, {s: 12, v: 2287430, p: 43.5},
+      {s: 31, v: 2254200, p: 46.6}, {s: 35, v: 2245357, p: 49.7}, {s: 6, v: 2225853, p: 52.8},
+      {s: 32, v: 2165225, p: 55.7}, {s: 22, v: 2123086, p: 58.7}, {s: 11, v: 2112120, p: 61.6},
+      {s: 41, v: 2068234, p: 64.4}, {s: 23, v: 2032872, p: 67.2}, {s: 18, v: 1958050, p: 69.9},
+      {s: 1, v: 1888656, p: 72.5}, {s: 21, v: 1844056, p: 75.0}, {s: 45, v: 1726031, p: 77.4},
+      {s: 25, v: 1651406, p: 79.7}, {s: 8, v: 1584721, p: 81.8}, {s: 17, v: 1461469, p: 83.8}
+    ];
+
+    const rawBcg = [
+      {s: 39, x: 1.0, y: 215.9, q: "Estrella"}, {s: 28, x: 0.88, y: 129.2, q: "Perro"},
+      {s: 13, x: 0.85, y: 129.2, q: "Vaca"},     {s: 20, x: 0.81, y: 210.2, q: "Estrella"},
+      {s: 27, x: 0.77, y: 139.5, q: "Vaca"},     {s: 2,  x: 0.72, y: 216.9, q: "Estrella"},
+      {s: 1,  x: 0.55, y: 217.2, q: "Estrella"}, {s: 5,  x: 0.21, y: 217.8, q: "Incógnita"},
+      {s: 3,  x: 0.18, y: 220.6, q: "Incógnita"},{s: 33, x: 0.04, y: 129.2, q: "Perro"}
+    ];
+
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // Renderizar Pareto SVG Nativo
+    function drawPareto() {
+      const svg = document.getElementById('paretoSvg');
+      svg.innerHTML = '';
+      const tooltip = document.getElementById('tooltip');
+
+      const maxV = 3500000;
+      const w = 950, h = 350;
+      const padding = 50;
+      const barW = (w - padding * 2) / rawPareto.length;
+
+      // Eje X y Y
+      svg.innerHTML += `<line x1="${padding}" y1="${h}" x2="${w}" y2="${h}" stroke="#ccc" stroke-width="2"/>`;
+      svg.innerHTML += `<line x1="${padding}" y1="20" x2="${padding}" y2="${h}" stroke="#ccc" stroke-width="2"/>`;
+
+      let points = "";
+
+      rawPareto.forEach((d, i) => {
+        const x = padding + i * barW;
+        const barH = (d.v / maxV) * (h - 40);
+        const y = h - barH;
+
+        // Barras
+        svg.innerHTML += `
+          <rect x="${x + 2}" y="${y}" width="${barW - 4}" height="${barH}" fill="#2a5298"
+            onmouseover="showTooltip(event, 'Tienda ${d.s}<br>Monto: $${d.v.toLocaleString()}<br>Acumulado: ${d.p}%')"
+            onmouseout="hideTooltip()"/>
+        `;
+
+        // Etiquetas X
+        if(i % 2 === 0) {
+          svg.innerHTML += `<text x="${x + barW/2}" y="${h + 15}" font-size="10" text-anchor="middle">T-${d.s}</text>`;
+        }
+
+        // Puntos de línea
+        const lineY = h - (d.p / 100) * (h - 40);
+        points += `${x + barW/2},${lineY} `;
+      });
+
+      // Línea Pareto
+      svg.innerHTML += `<polyline points="${points}" fill="none" stroke="#e74c3c" stroke-width="3"/>`;
+      // Línea de corte 80%
+      const y80 = h - (80 / 100) * (h - 40);
+      svg.innerHTML += `<line x1="${padding}" y1="${y80}" x2="${w}" y2="${y80}" stroke="#e74c3c" stroke-dasharray="5,5"/>`;
+    }
+
+    // Renderizar BCG SVG Nativo
+    function drawBCG() {
+      const svg = document.getElementById('bcgSvg');
+      svg.innerHTML = '';
+      const w = 750, h = 420, p = 60;
+
+      // Cuadrantes
+      const midX = p + (w - p*2)/2;
+      const midY = p + (h - p*2)/2;
+
+      svg.innerHTML += `<rect x="${p}" y="${p}" width="${(w-p*2)/2}" height="${(h-p*2)/2}" fill="#eef9ff" />`;
+      svg.innerHTML += `<rect x="${midX}" y="${p}" width="${(w-p*2)/2}" height="${(h-p*2)/2}" fill="#e8f8f5" />`;
+      svg.innerHTML += `<rect x="${p}" y="${midY}" width="${(w-p*2)/2}" height="${(h-p*2)/2}" fill="#fdfefe" />`;
+      svg.innerHTML += `<rect x="${midX}" y="${midY}" width="${(w-p*2)/2}" height="${(h-p*2)/2}" fill="#fef9e7" />`;
+
+      // Ejes
+      svg.innerHTML += `<line x1="${midX}" y1="${p}" x2="${midX}" y2="${h-p}" stroke="#aaa" stroke-dasharray="4"/>`;
+      svg.innerHTML += `<line x1="${p}" y1="${midY}" x2="${w-p}" y2="${midY}" stroke="#aaa" stroke-dasharray="4"/>`;
+
+      // Texto Cuadrantes
+      svg.innerHTML += `<text x="${p + 20}" y="${p + 30}" font-weight="bold" fill="#2980b9">❓ INCÓGNITA</text>`;
+      svg.innerHTML += `<text x="${midX + 20}" y="${p + 30}" font-weight="bold" fill="#27ae60">🌟 ESTRELLA</text>`;
+      svg.innerHTML += `<text x="${p + 20}" y="${midY + 30}" font-weight="bold" fill="#7f8c8d">🐶 PERRO</text>`;
+      svg.innerHTML += `<text x="${midX + 20}" y="${midY + 30}" font-weight="bold" fill="#f39c12">🐮 VACA LECHERA</text>`;
+
+      // Puntos
+      rawBcg.forEach(d => {
+        const cx = p + d.x * (w - p*2);
+        const cy = (h - p) - ((d.y - 120) / 110) * (h - p*2);
+
+        svg.innerHTML += `
+          <circle cx="${cx}" cy="${cy}" r="10" fill="#1e3c72" opacity="0.8"
+            onmouseover="showTooltip(event, 'Tienda ${d.s}<br>Cuota: ${d.x}<br>CPI: ${d.y}<br>Categoría: ${d.q}')"
+            onmouseout="hideTooltip()"/>
+          <text x="${cx}" y="${cy - 12}" font-size="11" font-weight="bold" text-anchor="middle">T-${d.s}</text>
+        `;
+      });
+    }
+
+    function showTooltip(evt, text) {
+      const tooltip = document.getElementById('tooltip');
+      tooltip.innerHTML = text;
+      tooltip.style.display = 'block';
+      tooltip.style.left = evt.pageX + 10 + 'px';
+      tooltip.style.top = evt.pageY - 25 + 'px';
+    }
+
+    function hideTooltip() {
+      document.getElementById('tooltip').style.display = 'none';
+    }
+
+    // Inicializar gráficos
+    window.onload = () => {
+      drawPareto();
+      drawBCG();
+    };
+  </script>
+</body>
+</html>
